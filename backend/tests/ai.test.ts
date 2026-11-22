@@ -86,6 +86,13 @@ describe("OpenAiSubtaskGenerator", () => {
   it.each([
     ["неверный ключ", apiError(401, "API-ключ не принят"), "неверный API-ключ"],
     ["нет средств", apiError(402, "Пополните баланс"), "нет средств"],
+    [
+      "блокировка доступа (OpenRouter, тело-строка)",
+      async () => {
+        throw OpenAI.APIError.generate(403, { error: "Access denied by security policy." }, undefined, new Headers());
+      },
+      "403: Access denied by security policy.",
+    ],
     ["нет модели", apiError(404, "model not found"), "модель не найдена"],
     ["лимит", apiError(429, "slow down"), "лимит"],
     ["сбой сервера", apiError(503, "Провайдер недоступен"), "ошибка API 503: Провайдер недоступен"],

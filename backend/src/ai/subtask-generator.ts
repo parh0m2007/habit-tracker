@@ -140,15 +140,23 @@ export class OpenAiSubtaskGenerator implements SubtaskGenerator {
   }
 }
 
-/** Текст ошибки от провайдера, если он его прислал (tooken.club присылает по-русски). */
+/**
+ * Текст ошибки от провайдера, если он его прислал. Формат у прокси разный:
+ * tooken.club шлёт `{ error: { message } }`, OpenRouter при блокировке — просто строку.
+ */
 function providerMessage(err: InstanceType<typeof OpenAI.APIError>): string | undefined {
-  const body = err.error as { message?: unknown } | undefined;
+  const body = err.error as { message?: unknown } | string | undefined;
+  if (typeof body === "string") return body;
   return typeof body?.message === "string" ? body.message : undefined;
 }
 
 function describeError(err: unknown): string {
   if (err instanceof LlmError) return err.message;
   if (err instanceof OpenAI.AuthenticationError) return "неверный API-ключ";
+  if (err instanceof OpenAI.PermissionDeniedError) {
+    const msg = providerMessage(err);
+    return `провайдер запретил доступ (403${msg ? `: ${msg}` : ""}), возможно, региональное ограничение`;
+  }
   if (err instanceof OpenAI.NotFoundError) return "модель не найдена";
   if (err instanceof OpenAI.RateLimitError) return "превышен лимит запросов";
   if (err instanceof OpenAI.APIConnectionTimeoutError) return "таймаут";
