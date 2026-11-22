@@ -65,8 +65,14 @@ export function decrypt(file: EncryptedFile, password: string): string {
   }
 }
 
-/** Запрос пароля без эха в терминале. */
-function askPassword(prompt: string): Promise<string> {
+/** Запрос пароля: в терминале — без эха, при перенаправленном вводе — весь stdin. */
+async function askPassword(prompt: string): Promise<string> {
+  if (!process.stdin.isTTY) {
+    let input = "";
+    for await (const chunk of process.stdin) input += chunk;
+    return input.trim();
+  }
+
   const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: true });
   const out = rl as unknown as { _writeToOutput: (s: string) => void; output: NodeJS.WriteStream };
   out._writeToOutput = (s: string) => {
