@@ -7,7 +7,9 @@
     "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
     "start": "tsx --env-file-if-exists=.env src/server.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lock-key": "tsx scripts/env-crypt.ts encrypt",
+    "unlock-key": "tsx scripts/env-crypt.ts decrypt"
   },
   "dependencies": {
     "@tracker/shared": "*",

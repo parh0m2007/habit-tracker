@@ -12,7 +12,9 @@
     "build": "npm run build -w frontend",
     "start": "npm run start -w backend",
     "test": "npm test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "unlock-key": "npm run unlock-key -w backend --",
+    "lock-key": "npm run lock-key -w backend --"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
